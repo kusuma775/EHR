@@ -1,0 +1,140 @@
+{% extends 'ehr_app/base.html' %}
+{% load static %}
+
+{% block title %}Smart EHR - Secure Provider Login{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+            <div class="card ehr-login-card border-0 shadow-lg rounded-3 overflow-hidden">
+                <!-- Card Header with subtle gradient -->
+                <div class="card-header bg-gradient-primary text-white text-center py-4 px-5 border-0">
+                    <img src="{% static 'images/ehr-logo-white.png' %}" alt="Smart EHR Logo" height="48" class="mb-3">
+                    <h2 class="h4 mb-0 fw-semibold">Provider Portal Login</h2>
+                    <p class="small opacity-75 mt-2 mb-0">Secure access to patient records</p>
+                </div>
+                
+                <!-- Card Body with improved spacing -->
+                <div class="card-body p-5">
+                   <form method="post" action="{% url 'login' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show mb-4">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Invalid credentials. Please try again.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Username Field -->
+                        <div class="mb-4">
+                            <label for="id_username" class="form-label small text-uppercase fw-semibold text-muted">Email or Username</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-user-md text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-lg border-start-0" id="id_username" 
+                                       name="username" placeholder="Enter your email or username" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Field -->
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label small text-uppercase fw-semibold text-muted">Password</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control form-control-lg border-start-0" id="id_password" 
+                                       name="password" placeholder="Enter your password" required>
+                                <button class="btn btn-light toggle-password border" type="button">
+                                    <i class="fas fa-eye text-muted"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label small" for="rememberMe">Remember me</label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot password?</a>
+                        </div>
+                        
+                        <!-- Login Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-4 py-3 fw-semibold">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </button>
+                        
+                        <!-- Divider -->
+                        <div class="position-relative my-4">
+                            <hr class="my-0">
+                            <span class="px-3 bg-white text-muted small position-absolute top-50 start-50 translate-middle">or continue with</span>
+                        </div>
+                        
+                        <!-- Social Login -->
+                        <div class="text-center">
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="btn btn-outline-secondary rounded-circle p-3">
+                                    <i class="fab fa-google"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary rounded-circle p-3">
+                                    <i class="fab fa-microsoft"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary rounded-circle p-3">
+                                    <i class="fab fa-apple"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Card Footer -->
+                <div class="card-footer bg-light text-center py-3 border-0">
+                    <p class="mb-0 small">Don't have an account? <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">Request access</a></p>
+                </div>
+            </div>
+            
+            <!-- Security Note -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="fas fa-shield-alt me-1"></i> 
+                    HIPAA compliant • 256-bit encryption • Strict access controls
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const togglePassword = document.querySelector('.toggle-password');
+    const password = document.querySelector('#id_password');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

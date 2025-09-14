@@ -1,0 +1,367 @@
+{% extends 'ehr_app/base.html' %}
+
+{% block title %}Home | MediCare EHR System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Revolutionizing Healthcare with Smart EHR Solutions</h1>
+                <p class="lead mb-4">Our cloud-based Electronic Health Records system helps healthcare providers deliver better patient care with streamlined workflows and secure data management.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 py-2">Get Started Free</a>
+                    <a href="#features" class="btn btn-outline-primary btn-lg px-4 py-2">Learn More</a>
+                </div>
+                <div class="d-flex align-items-center mt-4">
+                    <div class="d-flex">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" class="rounded-circle border border-3 border-white" width="40" height="40" alt="User">
+                        <img src="https://randomuser.me/api/portraits/men/41.jpg" class="rounded-circle border border-3 border-white ms-n2" width="40" height="40" alt="User">
+                        <img src="https://randomuser.me/api/portraits/women/63.jpg" class="rounded-circle border border-3 border-white ms-n2" width="40" height="40" alt="User">
+                    </div>
+                    <div class="ms-3">
+                        <p class="mb-0 fw-medium">Trusted by 2,000+ healthcare professionals</p>
+                        <div class="text-warning">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <span class="text-dark ms-1">4.9/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+               <img src="https://images.unsplash.com/photo-1581595219315-a187dd40c322?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="hero-image img-fluid" alt="Medical team using EHR system">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stats-item">
+                    <div class="stats-number">500+</div>
+                    <p class="mb-0 fw-medium">Healthcare Facilities</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-item">
+                    <div class="stats-number">2M+</div>
+                    <p class="mb-0 fw-medium">Patients Served</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-item">
+                    <div class="stats-number">99.9%</div>
+                    <p class="mb-0 fw-medium">Uptime</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-item">
+                    <div class="stats-number">24/7</div>
+                    <p class="mb-0 fw-medium">Support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">Comprehensive EHR Features</h2>
+            <p class="lead text-muted">Everything you need to manage patient care efficiently</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Secure Patient Records</h4>
+                        <p class="text-muted">HIPAA-compliant security with end-to-end encryption, multi-factor authentication, and detailed audit logs to ensure complete data protection.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-file-medical"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Unified Patient Charts</h4>
+                        <p class="text-muted">Comprehensive patient profiles with medical history, allergies, medications, lab results, and treatment plans all in one place.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Smart Scheduling</h4>
+                        <p class="text-muted">Intelligent appointment scheduling with automated reminders, waitlist management, and telehealth integration.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-prescription"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">e-Prescribing</h4>
+                        <p class="text-muted">Electronic prescriptions with drug interaction checks, formulary support, and direct transmission to pharmacies.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Analytics Dashboard</h4>
+                        <p class="text-muted">Real-time practice analytics with customizable reports on patient outcomes, financial performance, and operational metrics.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Mobile Access</h4>
+                        <p class="text-muted">Fully responsive design with native mobile apps for iOS and Android to access patient records anytime, anywhere.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Solutions Section -->
+<section id="solutions" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">Tailored Solutions</h2>
+            <p class="lead text-muted">Specialized EHR solutions for every healthcare setting</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Hospital" style="height: 180px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Hospitals</h5>
+                        <p class="card-text text-muted">Comprehensive inpatient and outpatient EHR with specialized modules for emergency, surgery, and ICU.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Clinic" style="height: 180px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Clinics</h5>
+                        <p class="card-text text-muted">Specialty-specific workflows for primary care, pediatrics, cardiology, and other outpatient specialties.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1579684453423-f84349ef60b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Private Practice" style="height: 180px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Private Practices</h5>
+                        <p class="card-text text-muted">Affordable, easy-to-use EHR with integrated practice management for solo and small group practices.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Telehealth" style="height: 180px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Telehealth</h5>
+                        <p class="card-text text-muted">Fully integrated virtual care platform with video visits, secure messaging, and remote monitoring.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">What Our Clients Say</h2>
+            <p class="lead text-muted">Trusted by healthcare professionals nationwide</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 testmonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/45.jpg" class="rounded-circle me-3" width="60" height="60" alt="Dr. Sarah Johnson">
+                            <div>
+                                <h5 class="mb-1 fw-bold">Dr. Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Cardiologist, Boston Medical</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"MediCare EHR has transformed our practice. The intuitive interface reduced our charting time by 40%, and the analytics dashboard helps us track quality metrics effortlessly."</p>
+                        <div class="text-warning">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 testmonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex mb-3">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-3" width="60" height="60" alt="Dr. Michael Chen">
+                            <div>
+                                <h5 class="mb-1 fw-bold">Dr. Michael Chen</h5>
+                                <p class="text-muted mb-0">Pediatrician, Sunshine Pediatrics</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"The immunization tracking and growth charts are fantastic for our pediatric practice. The mobile app lets me review charts from home, which has been a game-changer."</p>
+                        <div class="text-warning">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 testmonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-3" width="60" height="60" alt="Jennifer Wilson">
+                            <div>
+                                <h5 class="mb-1 fw-bold">Jennifer Wilson</h5>
+                                <p class="text-muted mb-0">Practice Administrator</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"Switching to MediCare EHR was the best decision we made. The billing integration reduced our claim denials by 30%, and the support team is incredibly responsive."</p>
+                        <div class="text-warning">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="cta-section">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="fw-bold mb-4">Ready to Transform Your Practice?</h2>
+                    <p class="lead mb-5">Join thousands of healthcare providers who trust MediCare EHR for their patient care needs.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'register' %}" class="btn btn-light btn-lg px-4">Start Free Trial</a>
+                        <a href="#" class="btn btn-outline-light btn-lg px-4">Schedule Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2 class="fw-bold mb-4">Have Questions?</h2>
+                <p class="lead text-muted">Our team is here to help you find the right solution for your practice.</p>
+                <div class="mt-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-telephone fs-4 me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Call Us</h5>
+                            <p class="mb-0 text-muted">(800) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-envelope fs-4 me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Email Us</h5>
+                            <p class="mb-0 text-muted">support@medicareehr.com</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-chat-dots fs-4 me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Live Chat</h5>
+                            <p class="mb-0 text-muted">Available 24/7</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-4">Send Us a Message</h3>
+                        <form>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Your Name">
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email Address">
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Organization">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="4" placeholder="Your Message"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

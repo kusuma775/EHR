@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EHR Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .ehr-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Dashboard Specific Styles */
+        .dashboard {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            position: relative;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .welcome-title {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-badges {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-badge {
+            background-color: #e8f4f8;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-badge i {
+            margin-right: 5px;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .summary-item-title {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .summary-item-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* Features Grid */
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            transition: all 0.3s ease;
+            border-top: 4px solid #3498db;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-icon {
+            color: #3498db;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalOpen 0.4s ease;
+        }
+
+        @keyframes modalOpen {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .table tr:hover {
+            background-color: #f5f7fa;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .features-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-badges {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body {% if not user.patient.registration_complete %}class="modal-open"{% endif %}>
+    <div class="ehr-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if user.is_patient and user.patient %}
+            <!-- Patient Dashboard -->
+            <div class="dashboard">
+                {% if not user.patient.registration_complete %}
+                    <!-- Registration Modal -->
+                    <div class="modal active" id="registrationModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Complete Your Medical Profile</h3>
+                                <button class="close-modal" onclick="closeModal('registrationModal')">&times;</button>
+                            </div>
+                            <div class="modal-body">
+    <form id="patientRegistrationForm" method="POST" action="{% url 'complete_registration' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="fullName" class="form-label">Full Name*</label>
+            <input type="text" id="fullName" name="full_name" class="form-control" required placeholder="Enter your full name">
+        </div>
+
+        <div class="form-group">
+            <label for="dob" class="form-label">Date of Birth*</label>
+            <input type="date" id="dob" name="dob" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender" class="form-label">Gender*</label>
+            <select id="gender" name="gender" class="form-control" required>
+                <option value="">Select Gender</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="bloodType" class="form-label">Blood Type</label>
+            <select id="bloodType" name="blood_type" class="form-control">
+                <option value="">Unknown</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="allergies" class="form-label">Known Allergies (if any)</label>
+            <input type="text" id="allergies" name="allergies" class="form-control" placeholder="e.g., Penicillin, Nuts">
+        </div>
+
+        <div class="form-group">
+            <label for="medicalHistory" class="form-label">Medical History (if any)</label>
+            <textarea id="medicalHistory" name="medical_history" class="form-control" placeholder="Previous conditions, surgeries, chronic illnesses"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="visitReason" class="form-label">Reason for Your Visit*</label>
+            <textarea id="visitReason" name="visit_reason" class="form-control" required placeholder="Please describe your symptoms, concerns, or reason for seeking medical attention (e.g., Fever, Pain, Consultation)"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Complete Registration</button>
+    </form>
+</div>                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Patient Dashboard Content -->
+                <div class="dashboard-header">
+                    <h1 class="welcome-title">Welcome back, {{ user.get_full_name }}</h1>
+                    <p class="welcome-subtitle">Here's your personalized health dashboard</p>
+                    <div class="info-badges">
+                        <span class="info-badge"><i class="fas fa-birthday-cake"></i> {{ user.patient.age|default:"Age not specified" }}</span>
+                        <span class="info-badge"><i class="fas fa-tint"></i> {{ user.patient.blood_type|default:"Blood type not specified" }}</span>
+                        <span class="info-badge"><i class="fas fa-user-md"></i> Primary care: {{ user.patient.doctor|default:"Not assigned" }}</span>
+                    </div>
+                </div>
+
+                <!-- Patient Summary Section -->
+                <div class="summary-section">
+                    <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Health Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-item-title">Current Medications</div>
+                            <div class="summary-item-value">{{ user.patient.current_medications|default:"None" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">Known Allergies</div>
+                            <div class="summary-item-value">{{ user.patient.allergies|default:"None reported" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">Chronic Conditions</div>
+                            <div class="summary-item-value">{{ user.patient.chronic_conditions|default:"None reported" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">Last Appointment</div>
+                            <div class="summary-item-value">{{ user.patient.last_appointment|default:"No appointments" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Features Grid -->
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> Patient Management</h2>
+                <div class="features-container">
+                    <div class="feature-card" onclick="openModal('personalDetailsModal')">
+                        <h3 class="feature-title"><i class="fas fa-user-edit feature-icon"></i> Personal Details</h3>
+                        <ul class="feature-list">
+                            <li>View and update your personal information</li>
+                            <li>Manage contact details and emergency contacts</li>
+                            <li>Edit demographic information</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card" onclick="openModal('medicalRecordsModal')">
+                        <h3 class="feature-title"><i class="fas fa-heartbeat feature-icon"></i> Medical Records</h3>
+                        <ul class="feature-list">
+                            <li>View your complete medical history</li>
+                            <li>Track allergies and medications</li>
+                            <li>Access immunization records</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('appointmentsModal')">
+                        <h3 class="feature-title"><i class="fas fa-calendar-check feature-icon"></i> Appointments</h3>
+                        <ul class="feature-list">
+                            <li>Schedule new appointments</li>
+                            <li>View upcoming and past appointments</li>
+                            <li>Manage appointment reminders</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('prescriptionsModal')">
+                        <h3 class="feature-title"><i class="fas fa-prescription-bottle-alt feature-icon"></i> Prescriptions</h3>
+                        <ul class="feature-list">
+                            <li>View current and past prescriptions</li>
+                            <li>Request refills</li>
+                            <li>Check medication instructions</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('testResultsModal')">
+                        <h3 class="feature-title"><i class="fas fa-flask feature-icon"></i> Test Results</h3>
+                        <ul class="feature-list">
+                            <li>View lab test results</li>
+                            <li>Track results over time</li>
+                            <li>Download reports</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('billingModal')">
+                        <h3 class="feature-title"><i class="fas fa-file-invoice-dollar feature-icon"></i> Billing & Insurance</h3>
+                        <ul class="feature-list">
+                            <li>View and pay bills online</li>
+                            <li>Check insurance coverage</li>
+                            <li>Access payment history</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('vitalsModal')">
+                        <h3 class="feature-title"><i class="fas fa-heartbeat feature-icon"></i> Enter Vitals</h3>
+                        <ul class="feature-list">
+                            <li>Record blood pressure</li>
+                            <li>Track temperature</li>
+                            <li>Monitor pulse and oxygen levels</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('consultationNotesModal')">
+                        <h3 class="feature-title"><i class="fas fa-file-medical feature-icon"></i> Consultation Notes</h3>
+                        <ul class="feature-list">
+                            <li>View doctor's notes</li>
+                            <li>Access diagnosis information</li>
+                            <li>See treatment plans</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% elif user.is_doctor and user.doctor %}
+            <!-- Doctor Dashboard -->
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1 class="welcome-title">Welcome, Dr. {{ user.get_full_name }}</h1>
+                    <p class="welcome-subtitle">Your professional dashboard</p>
+                    <div class="info-badges">
+                        <span class="info-badge"><i class="fas fa-briefcase-medical"></i> {{ user.doctor.specialty|default:"General Practitioner" }}</span>
+                        <span class="info-badge"><i class="fas fa-id-card"></i> License: {{ user.doctor.license_number|default:"Not specified" }}</span>
+                        <span class="info-badge"><i class="fas fa-users"></i> Patients: {{ user.doctor.patients.count }}</span>
+                    </div>
+                </div>
+
+                <!-- Doctor Summary Section -->
+                <div class="summary-section">
+                    <h3 class="section-title"><i class="fas fa-chart-line"></i> Practice Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-item-title">Today's Appointments</div>
+                            <div class="summary-item-value">{{ today_appointments|default:"0" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">Pending Prescriptions</div>
+                            <div class="summary-item-value">{{ pending_prescriptions|default:"0" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">New Messages</div>
+                            <div class="summary-item-value">{{ new_messages|default:"0" }}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">Recent Test Results</div>
+                            <div class="summary-item-value">{{ recent_test_results|default:"0" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor Features Grid -->
+                <h2 class="section-title"><i class="fas fa-user-md"></i> Doctor Management</h2>
+                <div class="features-container">
+                    <div class="feature-card" onclick="openModal('doctorPatientsModal')">
+                        <h3 class="feature-title"><i class="fas fa-users feature-icon"></i> View Patients</h3>
+                        <ul class="feature-list">
+                            <li>View your assigned patients</li>
+                            <li>Access patient medical records</li>
+                            <li>Monitor patient progress</li>
+                        </ul>
+                    </div>
+                    <!-- Add this modal with other modals -->
+<div class="modal" id="viewPatientsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Your Patients</h3>
+            <button class="close-modal" onclick="closeModal('viewPatientsModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="section">
+                <h4 class="section-title">Assigned Patients</h4>
+                {% if doctor_patients %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Age</th>
+                                <th>Last Visit</th>
+                                <th>Conditions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in doctor_patients %}
+                                <tr>
+                                    <td>{{ patient.user.get_full_name }}</td>
+                                    <td>{{ patient.age }}</td>
+                                    <td>{{ patient.last_appointment|default:"Never" }}</td>
+                                    <td>{{ patient.chronic_conditions|default:"None" }}</td>
+                                    <td>
+                                        <button class="btn btn-primary" onclick="viewPatientDetails('{{ patient.id }}')">View</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No patients assigned to you.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+                    <div class="feature-card" onclick="openModal('addDiagnosisModal')">
+                        <h3 class="feature-title"><i class="fas fa-stethoscope feature-icon"></i> Add Diagnosis</h3>
+                        <ul class="feature-list">
+                            <li>Record patient diagnoses</li>
+                            <li>Create treatment plans</li>
+                            <li>Track patient conditions</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('prescribeMedicationModal')">
+                        <h3 class="feature-title"><i class="fas fa-prescription feature-icon"></i> Prescribe Medication</h3>
+                        <ul class="feature-list">
+                            <li>Create new prescriptions</li>
+                            <li>View medication history</li>
+                            <li>Manage refill requests</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('viewTestResultsModal')">
+                        <h3 class="feature-title"><i class="fas fa-microscope feature-icon"></i> Test Results</h3>
+                        <ul class="feature-list">
+                            <li>View lab results</li>
+                            <li>Interpret test data</li>
+                            <li>Compare with previous tests</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('appointmentScheduleModal')">
+                        <h3 class="feature-title"><i class="fas fa-calendar-alt feature-icon"></i> Appointment Schedule</h3>
+                        <ul class="feature-list">
+                            <li>View your schedule</li>
+                            <li>Manage appointments</li>
+                            <li>Set availability</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('medicalHistoryModal')">
+                        <h3 class="feature-title"><i class="fas fa-file-medical-alt feature-icon"></i> Medical History</h3>
+                        <ul class="feature-list">
+                            <li>Access patient histories</li>
+                            <li>Review past treatments</li>
+                            <li>Track chronic conditions</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('consultationNotesModal')">
+                        <h3 class="feature-title"><i class="fas fa-notes-medical feature-icon"></i> Consultation Notes</h3>
+                        <ul class="feature-list">
+                            <li>Record visit details</li>
+                            <li>Add progress notes</li>
+                            <li>Document observations</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" onclick="openModal('generateReportsModal')">
+                        <h3 class="feature-title"><i class="fas fa-chart-pie feature-icon"></i> Generate Reports</h3>
+                        <ul class="feature-list">
+                            <li>Create patient summaries</li>
+                            <li>Generate practice analytics</li>
+                            <li>Export medical records</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Patient Modals -->
+        <div class="modal" id="personalDetailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Personal Details</h3>
+                    <button class="close-modal" onclick="closeModal('personalDetailsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Basic Information</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Full Name</span>
+                            <span class="detail-value">{{ user.get_full_name }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date of Birth</span>
+                            <span class="detail-value">{{ user.patient.dob|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Gender</span>
+                            <span class="detail-value">{{ user.patient.get_gender_display|default:"Not specified" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Contact Information</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Email</span>
+                            <span class="detail-value">{{ user.email }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone Number</span>
+                            <span class="detail-value">{{ user.patient.phone_number|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Address</span>
+                            <span class="detail-value">{{ user.patient.address|default:"Not specified" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Emergency Contact</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Name</span>
+                            <span class="detail-value">{{ user.patient.emergency_contact_name|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Relationship</span>
+                            <span class="detail-value">{{ user.patient.emergency_contact_relationship|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone</span>
+                            <span class="detail-value">{{ user.patient.emergency_contact_phone|default:"Not specified" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="medicalRecordsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Medical Records</h3>
+                    <button class="close-modal" onclick="closeModal('medicalRecordsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Health Summary</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Blood Type</span>
+                            <span class="detail-value">{{ user.patient.blood_type|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Height</span>
+                            <span class="detail-value">{{ user.patient.height|default:"Not specified" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Weight</span>
+                            <span class="detail-value">{{ user.patient.weight|default:"Not specified" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Medical History</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Allergies</span>
+                            <span class="detail-value">{{ user.patient.allergies|default:"None reported" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Chronic Conditions</span>
+                            <span class="detail-value">{{ user.patient.chronic_conditions|default:"None reported" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Previous Surgeries</span>
+                            <span class="detail-value">{{ user.patient.surgeries|default:"None reported" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Family Medical History</span>
+                            <span class="detail-value">{{ user.patient.family_medical_history|default:"None reported" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Current Medications</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Prescription Medications</span>
+                            <span class="detail-value">{{ user.patient.current_medications|default:"None" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Over-the-counter Medications</span>
+                            <span class="detail-value">{{ user.patient.otc_medications|default:"None" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Supplements</span>
+                            <span class="detail-value">{{ user.patient.supplements|default:"None" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="appointmentsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Appointments</h3>
+                    <button class="close-modal" onclick="closeModal('appointmentsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Upcoming Appointments</h4>
+                        {% if appointments %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Doctor</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                        <tr>
+                                            <td>{{ appointment.date }}</td>
+                                            <td>{{ appointment.time }}</td>
+                                            <td>{{ appointment.doctor }}</td>
+                                            <td>{{ appointment.reason }}</td>
+                                            <td>{{ appointment.status }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No upcoming appointments scheduled.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Schedule New Appointment</h4>
+                        <form id="newAppointmentForm" method="POST" action="{% url 'schedule_appointment' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="appointmentDate" class="form-label">Date*</label>
+                                <input type="date" id="appointmentDate" name="date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentTime" class="form-label">Time*</label>
+                                <input type="time" id="appointmentTime" name="time" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentDoctor" class="form-label">Doctor*</label>
+                                <select id="appointmentDoctor" name="doctor" class="form-control" required>
+                                    <option value="">Select Doctor</option>
+                                    {% for doctor in doctors %}
+                                        <option value="{{ doctor.id }}">Dr. {{ doctor.user.get_full_name }} - {{ doctor.specialty }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentReason" class="form-label">Reason*</label>
+                                <textarea id="appointmentReason" name="reason" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="prescriptionsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Prescriptions</h3>
+                    <button class="close-modal" onclick="closeModal('prescriptionsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Current Prescriptions</h4>
+                        {% if prescriptions %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Medication</th>
+                                        <th>Dosage</th>
+                                        <th>Frequency</th>
+                                        <th>Prescribed On</th>
+                                        <th>Prescribed By</th>
+                                        <th>Refills Left</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prescription in prescriptions %}
+                                        <tr>
+                                            <td>{{ prescription.medication }}</td>
+                                            <td>{{ prescription.dosage }}</td>
+                                            <td>{{ prescription.frequency }}</td>
+                                            <td>{{ prescription.date_prescribed }}</td>
+                                            <td>{{ prescription.doctor }}</td>
+                                            <td>{{ prescription.refills_left }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No current prescriptions.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Request Refill</h4>
+                        {% if prescriptions %}
+                            <form id="refillRequestForm" method="POST" action="{% url 'request_refill' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="refillPrescription" class="form-label">Select Prescription*</label>
+                                    <select id="refillPrescription" name="prescription" class="form-control" required>
+                                        <option value="">Select Prescription</option>
+                                        {% for prescription in prescriptions %}
+                                            <option value="{{ prescription.id }}">{{ prescription.medication }} ({{ prescription.dosage }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="refillNotes" class="form-label">Additional Notes</label>
+                                    <textarea id="refillNotes" name="notes" class="form-control"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Request Refill</button>
+                            </form>
+                        {% else %}
+                            <p>No prescriptions available for refill.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="testResultsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Test Results</h3>
+                    <button class="close-modal" onclick="closeModal('testResultsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Recent Test Results</h4>
+                        {% if test_results %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Test Name</th>
+                                        <th>Date</th>
+                                        <th>Ordered By</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in test_results %}
+                                        <tr>
+                                            <td>{{ result.test_name }}</td>
+                                            <td>{{ result.test_date }}</td>
+                                            <td>{{ result.ordered_by }}</td>
+                                            <td>{{ result.status }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewTestResult('{{ result.id }}')">View</button>
+                                                {% if result.report_file %}
+                                                    <a href="{{ result.report_file.url }}" class="btn btn-success" download>Download</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No test results available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="billingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Billing & Insurance</h3>
+                    <button class="close-modal" onclick="closeModal('billingModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Outstanding Bills</h4>
+                        {% if outstanding_bills %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Date</th>
+                                        <th>Service</th>
+                                        <th>Amount</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for bill in outstanding_bills %}
+                                        <tr>
+                                            <td>{{ bill.invoice_number }}</td>
+                                            <td>{{ bill.date_issued }}</td>
+                                            <td>{{ bill.service_description }}</td>
+                                            <td>${{ bill.amount }}</td>
+                                            <td>{{ bill.due_date }}</td>
+                                            <td>{{ bill.status }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewBill('{{ bill.id }}')">View</button>
+                                                <button class="btn btn-success" onclick="payBill('{{ bill.id }}')">Pay Now</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No outstanding bills.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Payment History</h4>
+                        {% if payment_history %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Invoice #</th>
+                                        <th>Amount</th>
+                                        <th>Payment Method</th>
+                                        <th>Receipt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payment_history %}
+                                        <tr>
+                                            <td>{{ payment.payment_date }}</td>
+                                            <td>{{ payment.invoice_number }}</td>
+                                            <td>${{ payment.amount }}</td>
+                                            <td>{{ payment.payment_method }}</td>
+                                            <td>
+                                                <a href="{{ payment.receipt.url }}" class="btn btn-primary" download>Download</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No payment history available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="vitalsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Enter Vitals</h3>
+                    <button class="close-modal" onclick="closeModal('vitalsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="vitalsForm" method="POST" action="{% url 'record_vitals' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="vitalsDate" class="form-label">Date*</label>
+                            <input type="date" id="vitalsDate" name="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bloodPressure" class="form-label">Blood Pressure (mmHg)</label>
+                            <input type="text" id="bloodPressure" name="blood_pressure" class="form-control" placeholder="e.g., 120/80">
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature" class="form-label">Temperature (°F)</label>
+                            <input type="number" step="0.1" id="temperature" name="temperature" class="form-control" placeholder="e.g., 98.6">
+                        </div>
+                        <div class="form-group">
+                            <label for="pulse" class="form-label">Pulse (bpm)</label>
+                            <input type="number" id="pulse" name="pulse" class="form-control" placeholder="e.g., 72">
+                        </div>
+                        <div class="form-group">
+                            <label for="oxygen" class="form-label">Oxygen Saturation (%)</label>
+                            <input type="number" id="oxygen" name="oxygen" class="form-control" placeholder="e.g., 98">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight" class="form-label">Weight (lbs)</label>
+                            <input type="number" step="0.1" id="weight" name="weight" class="form-control" placeholder="e.g., 150.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea id="notes" name="notes" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Record Vitals</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="consultationNotesModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Consultation Notes</h3>
+                    <button class="close-modal" onclick="closeModal('consultationNotesModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    {% if consultation_notes %}
+                        {% for note in consultation_notes %}
+                            <div class="section">
+                                <h4 class="section-title">{{ note.date }} - {{ note.doctor }}</h4>
+                                <div class="detail-item">
+                                    <span class="detail-label">Reason for Visit</span>
+                                    <span class="detail-value">{{ note.reason }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Diagnosis</span>
+                                    <span class="detail-value">{{ note.diagnosis }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Treatment Plan</span>
+                                    <span class="detail-value">{{ note.treatment }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Notes</span>
+                                    <span class="detail-value">{{ note.notes }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No consultation notes available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Modals -->
+        <div class="modal" id="doctorPatientsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">My Patients</h3>
+                    <button class="close-modal" onclick="closeModal('doctorPatientsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Patient List</h4>
+                        {% if doctor_patients %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <th>Age</th>
+                                        <th>Last Visit</th>
+                                        <th>Conditions</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for patient in doctor_patients %}
+                                        <tr>
+                                            <td>{{ patient.user.get_full_name }}</td>
+                                            <td>{{ patient.age }}</td>
+                                            <td>{{ patient.last_visit|default:"Never" }}</td>
+                                            <td>{{ patient.chronic_conditions|default:"None" }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewPatient('{{ patient.id }}')">View</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No patients assigned to you.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="addDiagnosisModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add Diagnosis</h3>
+                    <button class="close-modal" onclick="closeModal('addDiagnosisModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="diagnosisForm" method="POST" action="{% url 'add_diagnosis' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="diagnosisPatient" class="form-label">Patient*</label>
+                            <select id="diagnosisPatient" name="patient" class="form-control" required>
+                                <option value="">Select Patient</option>
+                                {% for patient in doctor_patients %}
+                                    <option value="{{ patient.id }}">{{ patient.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosisDate" class="form-label">Date*</label>
+                            <input type="date" id="diagnosisDate" name="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosisCode" class="form-label">Diagnosis Code (ICD-10)</label>
+                            <input type="text" id="diagnosisCode" name="code" class="form-control" placeholder="e.g., E11.65">
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosisDescription" class="form-label">Diagnosis Description*</label>
+                            <textarea id="diagnosisDescription" name="description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosisNotes" class="form-label">Clinical Notes</label>
+                            <textarea id="diagnosisNotes" name="notes" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Diagnosis</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="prescribeMedicationModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Prescribe Medication</h3>
+                    <button class="close-modal" onclick="closeModal('prescribeMedicationModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="prescriptionForm" method="POST" action="{% url 'prescribe_medication' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="prescriptionPatient" class="form-label">Patient*</label>
+                            <select id="prescriptionPatient" name="patient" class="form-control" required>
+                                <option value="">Select Patient</option>
+                                {% for patient in doctor_patients %}
+                                    <option value="{{ patient.id }}">{{ patient.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionDate" class="form-label">Date*</label>
+                            <input type="date" id="prescriptionDate" name="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionMedication" class="form-label">Medication*</label>
+                            <input type="text" id="prescriptionMedication" name="medication" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionDosage" class="form-label">Dosage*</label>
+                            <input type="text" id="prescriptionDosage" name="dosage" class="form-control" required placeholder="e.g., 500mg">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionFrequency" class="form-label">Frequency*</label>
+                            <input type="text" id="prescriptionFrequency" name="frequency" class="form-control" required placeholder="e.g., Twice daily">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionDuration" class="form-label">Duration</label>
+                            <input type="text" id="prescriptionDuration" name="duration" class="form-control" placeholder="e.g., 7 days">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionRefills" class="form-label">Refills</label>
+                            <input type="number" id="prescriptionRefills" name="refills" class="form-control" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionInstructions" class="form-label">Special Instructions</label>
+                            <textarea id="prescriptionInstructions" name="instructions" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Prescribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="viewTestResultsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Test Results</h3>
+                    <button class="close-modal" onclick="closeModal('viewTestResultsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Pending Results</h4>
+                        {% if pending_test_results %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Test Name</th>
+                                        <th>Ordered Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in pending_test_results %}
+                                        <tr>
+                                            <td>{{ result.patient }}</td>
+                                            <td>{{ result.test_name }}</td>
+                                            <td>{{ result.ordered_date }}</td>
+                                            <td>{{ result.status }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewTestResult('{{ result.id }}')">View</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No pending test results.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Completed Results</h4>
+                        {% if completed_test_results %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Test Name</th>
+                                        <th>Test Date</th>
+                                        <th>Result</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in completed_test_results %}
+                                        <tr>
+                                            <td>{{ result.patient }}</td>
+                                            <td>{{ result.test_name }}</td>
+                                            <td>{{ result.test_date }}</td>
+                                            <td>{{ result.result_summary }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewTestResult('{{ result.id }}')">View</button>
+                                                <button class="btn btn-success" onclick="shareResult('{{ result.id }}')">Share</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No completed test results.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="appointmentScheduleModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Appointment Schedule</h3>
+                    <button class="close-modal" onclick="closeModal('appointmentScheduleModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Today's Appointments</h4>
+                        {% if todays_appointments %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in todays_appointments %}
+                                        <tr>
+                                            <td>{{ appointment.time }}</td>
+                                            <td>{{ appointment.patient }}</td>
+                                            <td>{{ appointment.reason }}</td>
+                                            <td>{{ appointment.status }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="startAppointment('{{ appointment.id }}')">Start</button>
+                                                <button class="btn btn-danger" onclick="cancelAppointment('{{ appointment.id }}')">Cancel</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No appointments scheduled for today.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section">
+                        <h4 class="section-title">Upcoming Appointments</h4>
+                        {% if upcoming_appointments %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Patient</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in upcoming_appointments %}
+                                        <tr>
+                                            <td>{{ appointment.date }}</td>
+                                            <td>{{ appointment.time }}</td>
+                                            <td>{{ appointment.patient }}</td>
+                                            <td>{{ appointment.reason }}</td>
+                                            <td>{{ appointment.status }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No upcoming appointments.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="medicalHistoryModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Patient Medical History</h3>
+                    <button class="close-modal" onclick="closeModal('medicalHistoryModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Select Patient</h4>
+                        <select id="patientSelector" class="form-control" onchange="loadPatientHistory(this.value)">
+                            <option value="">Select a patient</option>
+                            {% for patient in doctor_patients %}
+                                <option value="{{ patient.id }}">{{ patient.user.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="patientHistoryContent" style="display: none;">
+                        <div class="section">
+                            <h4 class="section-title">Basic Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value" id="historyPatientName"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Age</span>
+                                <span class="detail-value" id="historyPatientAge"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Gender</span>
+                                <span class="detail-value" id="historyPatientGender"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Blood Type</span>
+                                <span class="detail-value" id="historyPatientBloodType"></span>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h4 class="section-title">Medical History</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Allergies</span>
+                                <span class="detail-value" id="historyPatientAllergies"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Chronic Conditions</span>
+                                <span class="detail-value" id="historyPatientConditions"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Surgeries</span>
+                                <span class="detail-value" id="historyPatientSurgeries"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Family History</span>
+                                <span class="detail-value" id="historyPatientFamilyHistory"></span>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h4 class="section-title">Current Medications</h4>
+                            <div id="historyPatientMedications"></div>
+                        </div>
+
+                        <div class="section">
+                            <h4 class="section-title">Previous Consultations</h4>
+                            <div id="historyPatientConsultations"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="consultationNotesModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Consultation Notes</h3>
+                    <button class="close-modal" onclick="closeModal('consultationNotesModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="consultationForm" method="POST" action="{% url 'add_consultation_note' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="consultationPatient" class="form-label">Patient*</label>
+                            <select id="consultationPatient" name="patient" class="form-control" required>
+                                <option value="">Select Patient</option>
+                                {% for patient in doctor_patients %}
+                                    <option value="{{ patient.id }}">{{ patient.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationDate" class="form-label">Date*</label>
+                            <input type="date" id="consultationDate" name="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationReason" class="form-label">Reason for Visit*</label>
+                            <textarea id="consultationReason" name="reason" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationDiagnosis" class="form-label">Diagnosis*</label>
+                            <textarea id="consultationDiagnosis" name="diagnosis" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationTreatment" class="form-label">Treatment Plan*</label>
+                            <textarea id="consultationTreatment" name="treatment" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationNotes" class="form-label">Clinical Notes</label>
+                            <textarea id="consultationNotes" name="notes" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Notes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="generateReportsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Generate Reports</h3>
+                    <button class="close-modal" onclick="closeModal('generateReportsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="section">
+                        <h4 class="section-title">Select Report Type</h4>
+                        <select id="reportType" class="form-control" onchange="showReportOptions(this.value)">
+                            <option value="">Select a report type</option>
+                            <option value="patientSummary">Patient Summary</option>
+                            <option value="prescriptionHistory">Prescription History</option>
+                            <option value="appointmentHistory">Appointment History</option>
+                            <option value="testResultSummary">Test Result Summary</option>
+                        </select>
+                    </div>
+
+                    <div id="reportOptions" style="display: none;">
+                        <div class="section">
+                            <h4 class="section-title">Report Options</h4>
+                            <form id="reportForm" method="POST" action="{% url 'generate_report' %}">
+                                {% csrf_token %}
+                                <input type="hidden" id="reportTypeInput" name="report_type">
+                                
+                                <div id="patientSelection" class="form-group" style="display: none;">
+                                    <label for="reportPatient" class="form-label">Patient*</label>
+                                    <select id="reportPatient" name="patient" class="form-control">
+                                        <option value="">Select Patient</option>
+                                        {% for patient in doctor_patients %}
+                                            <option value="{{ patient.id }}">{{ patient.user.get_full_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div id="dateRangeSelection" class="form-group" style="display: none;">
+                                    <label class="form-label">Date Range</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="date" id="startDate" name="start_date" class="form-control">
+                                        <input type="date" id="endDate" name="end_date" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="reportFormat" class="form-label">Format*</label>
+                                    <select id="reportFormat" name="format" class="form-control" required>
+                                        <option value="pdf">PDF</option>
+                                        <option value="csv">CSV</option>
+                                        <option value="html">HTML</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Generate Report</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewPatientDetails(patientId) {
+    fetch(`/get-patient-details/${patientId}/`)
+        .then(response => response.json())
+        .then(patient => {
+            const modalContent = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Patient Details</h3>
+                        <button class="close-modal" onclick="closeModal('patientDetailsModal')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="section">
+                            <h4 class="section-title">Basic Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value">${patient.name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date of Birth</span>
+                                <span class="detail-value">${patient.dob}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Gender</span>
+                                <span class="detail-value">${patient.gender}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Blood Type</span>
+                                <span class="detail-value">${patient.blood_type}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h4 class="section-title">Medical Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Allergies</span>
+                                <span class="detail-value">${patient.allergies}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Chronic Conditions</span>
+                                <span class="detail-value">${patient.conditions}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Current Medications</span>
+                                <span class="detail-value">${patient.medications}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Last Appointment</span>
+                                <span class="detail-value">${patient.last_appointment}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            let modal = document.getElementById('patientDetailsModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'patientDetailsModal';
+                modal.className = 'modal';
+                document.body.appendChild(modal);
+            }
+            
+            modal.innerHTML = modalContent;
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading patient details');
+        });
+}
+        // Function to open modals
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+
+        // Function to close modals
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            document.querySelectorAll('.modal.active').forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.classList.remove('modal-open');
+                }
+            });
+        }
+
+        // Handle registration form submission
+        document.getElementById('patientRegistrationForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.submit();
+        });
+
+        // Load patient history when selected
+        function loadPatientHistory(patientId) {
+            if (!patientId) {
+                document.getElementById('patientHistoryContent').style.display = 'none';
+                return;
+            }
+
+            // In a real application, you would fetch this data from the server via AJAX
+            // For this example, we'll simulate it with static data
+            const patientData = {
+                name: "John Doe",
+                age: 42,
+                gender: "Male",
+                bloodType: "A+",
+                allergies: "Penicillin, Nuts",
+                conditions: "Hypertension, Type 2 Diabetes",
+                surgeries: "Appendectomy (2005)",
+                familyHistory: "Father - Heart disease, Mother - Diabetes",
+                medications: [
+                    { name: "Metformin", dosage: "500mg", frequency: "Twice daily" },
+                    { name: "Lisinopril", dosage: "10mg", frequency: "Once daily" }
+                ],
+                consultations: [
+                    { date: "2023-05-15", reason: "Diabetes follow-up", diagnosis: "Type 2 Diabetes", treatment: "Continue current regimen" },
+                    { date: "2023-03-10", reason: "Blood pressure check", diagnosis: "Hypertension", treatment: "Increased Lisinopril dosage" }
+                ]
+            };
+
+            // Populate the data
+            document.getElementById('historyPatientName').textContent = patientData.name;
+            document.getElementById('historyPatientAge').textContent = patientData.age;
+            document.getElementById('historyPatientGender').textContent = patientData.gender;
+            document.getElementById('historyPatientBloodType').textContent = patientData.bloodType;
+            document.getElementById('historyPatientAllergies').textContent = patientData.allergies;
+            document.getElementById('historyPatientConditions').textContent = patientData.conditions;
+            document.getElementById('historyPatientSurgeries').textContent = patientData.surgeries;
+            document.getElementById('historyPatientFamilyHistory').textContent = patientData.familyHistory;
+
+            // Populate medications
+            const medicationsList = patientData.medications.map(med => 
+                `<div class="detail-item">
+                    <span class="detail-label">${med.name}</span>
+                    <span class="detail-value">${med.dosage} - ${med.frequency}</span>
+                </div>`
+            ).join('');
+            document.getElementById('historyPatientMedications').innerHTML = medicationsList;
+
+            // Populate consultations
+            const consultationsList = patientData.consultations.map(consult => 
+                `<div class="detail-item">
+                    <h5>${consult.date} - ${consult.reason}</h5>
+                    <p><strong>Diagnosis:</strong> ${consult.diagnosis}</p>
+                    <p><strong>Treatment:</strong> ${consult.treatment}</p>
+                </div>`
+            ).join('');
+            document.getElementById('historyPatientConsultations').innerHTML = consultationsList;
+
+            document.getElementById('patientHistoryContent').style.display = 'block';
+        }
+
+        // Show report options based on type
+        function showReportOptions(reportType) {
+            const reportOptions = document.getElementById('reportOptions');
+            const patientSelection = document.getElementById('patientSelection');
+            const dateRangeSelection = document.getElementById('dateRangeSelection');
+            
+            if (!reportType) {
+                reportOptions.style.display = 'none';
+                return;
+            }
+
+            document.getElementById('reportTypeInput').value = reportType;
+            
+            // Show/hide options based on report type
+            if (reportType === 'patientSummary') {
+                patientSelection.style.display = 'block';
+                dateRangeSelection.style.display = 'none';
+            } else {
+                patientSelection.style.display = 'block';
+                dateRangeSelection.style.display = 'block';
+            }
+            
+            reportOptions.style.display = 'block';
+        }
+
+        // View test result (simulated)
+        function viewTestResult(resultId) {
+            alert(`Viewing test result with ID: ${resultId}`);
+            // In a real application, this would fetch and display the test result details
+        }
+
+        // Pay bill (simulated)
+        function payBill(billId) {
+            alert(`Paying bill with ID: ${billId}`);
+            // In a real application, this would initiate a payment process
+        }
+
+        // View patient (simulated)
+        function viewPatient(patientId) {
+            alert(`Viewing patient with ID: ${patientId}`);
+            // In a real application, this would show detailed patient information
+        }
+
+        // Start appointment (simulated)
+        function startAppointment(appointmentId) {
+            alert(`Starting appointment with ID: ${appointmentId}`);
+            // In a real application, this would initiate the appointment workflow
+        }
+
+        // Cancel appointment (simulated)
+        function cancelAppointment(appointmentId) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                alert(`Canceling appointment with ID: ${appointmentId}`);
+                // In a real application, this would send a cancellation request to the server
+            }
+        }
+
+        // Share test result (simulated)
+        function shareResult(resultId) {
+            alert(`Sharing test result with ID: ${resultId}`);
+            // In a real application, this would open a sharing dialog
+        }
+    </script>
+</body>
+</html>
